@@ -6,7 +6,46 @@
 #include "DiscreteKnapsackProblem.h"
 
 string DiscreteKnapsackProblem::bruteForce() {
-    return nullptr;
+    int current_dec = 1;
+    int current_best;
+    int max = 0;
+    while (true){
+        bool *current_bin = dec2bin(current_dec);
+        int sum = 0;
+        int sumSize = 0;
+        int checked = 0;
+        for (int i = 0; i < numberOfItems; i++){
+            if (current_bin[i]){
+                sum += values[i];
+                sumSize += sizes[i];
+                checked++;
+            }
+        }
+
+        if (sumSize <= sizeOfKnapsack && sum > max){
+            current_best = current_dec;
+            max = sum;
+        }
+
+        delete [] current_bin;
+        current_dec++;
+        if (checked == numberOfItems) break;
+    }
+
+    stringstream ss;
+    ss << "Przeglad zupelny.\nWynik: " << endl;
+
+    bool *current_bin = dec2bin(current_best);
+    for (int i = 0; i < numberOfItems; i++){
+        if (current_bin[i]){
+            ss << numberOfItems-i-1 << " ";
+        }
+    }
+
+    delete [] current_bin;
+
+    ss << endl << max << endl;
+    return ss.str();
 }
 
 string DiscreteKnapsackProblem::greedyAlgorithm() {
@@ -19,10 +58,10 @@ string DiscreteKnapsackProblem::greedyAlgorithm() {
         items.addElement(i,0);
     }
 
-    for (int i = 0; i < numberOfItems; i++){
+   /* for (int i = 0; i < numberOfItems; i++){
         std::cout << i << " " << ratio[i] << " " << items[i] << endl;
     }
-    std::cout << endl;
+    std::cout << endl;*/
 
     //sortowanie
     for (int i = 0; i < numberOfItems; i++)
@@ -35,13 +74,13 @@ string DiscreteKnapsackProblem::greedyAlgorithm() {
                 items[j] = items[j+1];
                 items[j+1] = tmp2;
             }
-    for (int i = 0; i < numberOfItems; i++){
-        std::cout << i <<  " " << ratio[i] << " " << items[i] <</* " " << sizes[i] << " " << values[i] << */endl;
+  /*  for (int i = 0; i < numberOfItems; i++){
+        std::cout << i <<  " " << ratio[i] << " " << items[i] <</* " " << sizes[i] << " " << values[i] << *//*endl;
     }
-    std::cout << endl;
+    std::cout << endl;*/
 
     stringstream ss;
-    ss << "Wynik: " << endl;
+    ss << "Algorytm zachlanny.\nWynik: " << endl;
 
     int i = 0;
     while (maxSize > 0 && i < numberOfItems){
@@ -49,8 +88,8 @@ string DiscreteKnapsackProblem::greedyAlgorithm() {
             maxSize -= sizes[numberOfItems-1-items[i]];
             sumOfValues += values[numberOfItems-1-items[i]];
             ss << items[i] << " ";
-            std::cout << i << " " << items[i] << " " << sizes[numberOfItems-1-items[i]] << " " <<
-                      values[numberOfItems-1-items[i]] << " " << sumOfValues << " " << maxSize<< endl;
+            //std::cout << i << " " << items[i] << " " << sizes[numberOfItems-1-items[i]] << " " <<
+            //          values[numberOfItems-1-items[i]] << " " << sumOfValues << " " << maxSize<< endl;
         }
         i++;
     }
@@ -59,7 +98,45 @@ string DiscreteKnapsackProblem::greedyAlgorithm() {
 }
 
 string DiscreteKnapsackProblem::dynamicProgramming() {
-    return nullptr;
+    Array3* resultArray = new Array3[numberOfItems+1];
+    for (int i = 0; i < numberOfItems+1; i++){
+        for (int j = 0; j < sizeOfKnapsack+1; j++){
+            resultArray[i].addElement(0,0);
+        }
+    }
+
+    for (int i = 1; i < numberOfItems+1; i++){
+        for (int j = 1; j < sizeOfKnapsack+1; j++){
+            if (j - sizes[i-1] >= 0 && resultArray[i-1][j-sizes[i-1]]+values[i-1] > resultArray[i-1][j]){
+                resultArray[i][j] = resultArray[i-1][j-sizes[i-1]]+values[i-1];
+            }
+            else {
+                resultArray[i][j] = resultArray[i-1][j];
+            }
+        }
+    }
+
+
+    stringstream ss;
+    ss << "Programowanie dynamiczne.\nWynik: " << endl;
+
+    int j = sizeOfKnapsack;
+    int i = numberOfItems;
+    while(j > 0 && i > 0){
+        if(resultArray[i][j] == resultArray[i-1][j]) {
+            //cout << i << " " << resultArray[i][j] << " " << resultArray[i-1][j] << endl;
+            i--;
+        }
+        else {
+            //cout << i << " Wyciagam " << resultArray[i][j] << " " << resultArray[i-1][j] << endl;
+            ss << numberOfItems-(i) << " ";
+            j -= sizes[i-1];
+            i--;
+        }
+    }
+
+    ss << endl << resultArray[numberOfItems][sizeOfKnapsack] << endl;
+    return ss.str();
 }
 
 void DiscreteKnapsackProblem::loadFromFile(std::string filename) {
@@ -79,4 +156,15 @@ void DiscreteKnapsackProblem::loadFromFile(std::string filename) {
 
 void DiscreteKnapsackProblem::generateRandom() {
 
+}
+
+bool* DiscreteKnapsackProblem::dec2bin(int dec) {
+    bool* bin = new bool[numberOfItems];
+    for (int i = 0; i < numberOfItems; i++){
+        bool rest = dec%2;
+        dec /= 2;
+        bin[i] = rest;
+    }
+
+    return bin;
 }

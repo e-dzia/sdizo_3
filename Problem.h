@@ -9,6 +9,7 @@
 
 class Problem {
     //tu bedzie jakies menu i algorytmy
+private:
 
 public:
     virtual std::string bruteForce() = 0;

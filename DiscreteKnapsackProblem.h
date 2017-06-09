@@ -27,6 +27,9 @@ public:
 
     void generateRandom() override;
 
+    bool* dec2bin(int dec);
+
+    long long int power(int n);
 };
 
 

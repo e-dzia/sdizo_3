@@ -5,14 +5,17 @@
 
 int main() {
     Problem * p = new DiscreteKnapsackProblem;
-   // p->loadFromFile("data_knapsack.txt");
-   // std::cout << p->greedyAlgorithm() << endl;
+    p->loadFromFile("data_knapsack.txt");
+    std::cout << p->bruteForce() << endl;
+    std::cout << p->greedyAlgorithm() << endl;
+    std::cout << p->dynamicProgramming() << endl;
+
     delete p;
 
-    p = new TravellingSalesmanProblem;
-    p->loadFromFile("data_salesman.txt");
-    std::cout << p->greedyAlgorithm();
-    delete p;
+    //p = new TravellingSalesmanProblem;
+    //p->loadFromFile("data_salesman.txt");
+    //std::cout << p->greedyAlgorithm();
+    //delete p;
 
     return 0;
 }
