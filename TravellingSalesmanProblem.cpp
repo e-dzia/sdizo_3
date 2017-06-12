@@ -4,10 +4,24 @@
 
 #include "TravellingSalesmanProblem.h"
 #include <sstream>
+#include <algorithm>
 
 std::string TravellingSalesmanProblem::bruteForce() {
+    int start = 0;
+    int *permutation = new int[numberOfCities];
+    for (int i = 0; i < numberOfCities; i++){
+        permutation[i] = i;
+    }
 
-    return nullptr;
+    int min = INT32_MAX;
+    std::string result = "";
+    permute(permutation, 1, numberOfCities - 1, min, result);
+    std::stringstream ss;
+    ss << "Przeglad zupelny.\nWynik: " << std::endl;
+    ss << result;
+
+    ss << ": " << min << std::endl;
+    return ss.str();
 }
 
 std::string TravellingSalesmanProblem::greedyAlgorithm() {
@@ -19,7 +33,7 @@ std::string TravellingSalesmanProblem::greedyAlgorithm() {
         visited[i] = false;
         path[i] = -1;
     }
-    int start = 1;
+    int start = 0;
     int i = start;
 
     while(!allVisited(visited)){
@@ -43,14 +57,14 @@ std::string TravellingSalesmanProblem::greedyAlgorithm() {
 
 
     std::stringstream ss;
-    ss << "Wynik: " << std::endl;
+    ss << "Algorytm zachlanny.\nWynik: " << std::endl;
     int j = start;
     while (path[j] != -1) {
         ss << path[j] << " ";
         j = path[j];
     }
     ss << ": " << length << std::endl;
-return ss.str();
+    return ss.str();
 }
 
 std::string TravellingSalesmanProblem::dynamicProgramming() {
@@ -80,4 +94,50 @@ bool TravellingSalesmanProblem::allVisited(bool *visited) {
         if (!visited[i]) return false;
     }
     return true;
+}
+
+void TravellingSalesmanProblem::permute(int *permutation, int left, int right, int &min, std::string &result) {
+    int i;
+    if (left == right){
+        std::string result_tmp = countPath(permutation, min);
+        if (result_tmp != ""){
+            result = result_tmp;
+        }
+    }
+    else
+    {
+        for (i = left; i <= right; i++)
+        {
+            swap((permutation+left), (permutation+i));
+            permute(permutation, left + 1, right, min, result);
+            swap((permutation+left), (permutation+i)); //backtrack
+        }
+    }
+
+}
+
+void TravellingSalesmanProblem::swap(int *pInt, int *pInt1) {
+    int tmp = *pInt;
+    *pInt = *pInt1;
+    *pInt1 = tmp;
+}
+
+std::string TravellingSalesmanProblem::countPath(int *permutation, int &min) {
+    int length = 0;
+    int end;
+    for (int i = 1; i < numberOfCities; i++){
+        length += gm.getEdgeLength(permutation[i-1],permutation[i]);
+        end = i;
+    }
+    length += gm.getEdgeLength(permutation[end],permutation[0]);
+
+    if (length < min){
+        min = length;
+        std::stringstream ss;
+        for (int i = 0; i < numberOfCities; i++){
+            ss << permutation[i] << " ";
+        }
+        return ss.str();
+    }
+    return "";
 }

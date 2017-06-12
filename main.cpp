@@ -12,10 +12,11 @@ int main() {
 
     delete p;
 
-    //p = new TravellingSalesmanProblem;
-    //p->loadFromFile("data_salesman.txt");
-    //std::cout << p->greedyAlgorithm();
-    //delete p;
+    p = new TravellingSalesmanProblem;
+    p->loadFromFile("data_salesman.txt");
+    std::cout << p->greedyAlgorithm() << endl;
+    std::cout << p->bruteForce() << endl;
+    delete p;
 
     return 0;
 }
