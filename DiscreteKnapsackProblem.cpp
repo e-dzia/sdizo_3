@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <chrono>
 #include "DiscreteKnapsackProblem.h"
 
 string DiscreteKnapsackProblem::bruteForce() {
@@ -154,7 +155,21 @@ void DiscreteKnapsackProblem::loadFromFile(std::string filename) {
     }
 }
 
-void DiscreteKnapsackProblem::generateRandom() {
+void DiscreteKnapsackProblem::generateRandom(int number, int size) {
+    int sum = 0;
+    numberOfItems = number;
+    sizeOfKnapsack = size;
+    do {
+        sizes.deleteAll();
+        values.deleteAll();
+        for (int i = 0; i < numberOfItems; i++){
+            int size_tmp = rand()%100;
+            int value_tmp = rand()%100;
+            sizes.addElement(size_tmp,0);
+            values.addElement(value_tmp,0);
+            sum += size_tmp;
+        }
+    } while (sum < sizeOfKnapsack);
 
 }
 
@@ -167,4 +182,109 @@ bool* DiscreteKnapsackProblem::dec2bin(int dec) {
     }
 
     return bin;
+}
+
+double DiscreteKnapsackProblem::testTime(int algorithmType) {
+    std::chrono::nanoseconds time_start;
+    std::chrono::nanoseconds time_end;
+    //double time_duration;
+
+    this->loadFromFile("data_knapsack.txt");
+    switch (algorithmType){
+        case 0:
+            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            this->bruteForce();
+            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            break;
+        case 1:
+            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            this->greedyAlgorithm();
+            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            break;
+        case 2:
+            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            this->dynamicProgramming();
+            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            break;
+    }
+
+
+    return (time_end - time_start) / std::chrono::nanoseconds(1);
+}
+
+void DiscreteKnapsackProblem::saveToFile(std::string filename) {
+    ofstream fout;
+    fout.open(filename.c_str());
+    fout << sizeOfKnapsack << std::endl;
+    fout << numberOfItems << std::endl;
+    for (int i = 0; i < numberOfItems; i++) {
+        fout << sizes[i] << " ";
+        fout << values[i] << std::endl;
+    }
+}
+
+void DiscreteKnapsackProblem::menu() {
+    std::chrono::nanoseconds time_start;
+    std::chrono::nanoseconds time_end;
+    std::cout << "MENU - Problem plecakowy\n"
+            "1. Wczytaj z pliku.\n"
+            "2. Generuj losowo.\n"
+            "3. Przeglad zupelny.\n"
+            "4. Algorytm zachlanny.\n"
+            "5. Programowanie dynamiczne.\n"
+            "6. Wyjdz do glownego menu.\n"
+            "Prosze wpisac odpowiednia liczbe.\n";
+    int chosen;
+    std::cin >> chosen;
+    switch(chosen){
+        case 1:
+            this->loadFromFile("data_knapsack.txt");
+            break;
+        case 2:
+            cout << "Prosze podac liczbe przedmiotow.\n";
+            int v;
+            cin >> v;
+            cout << "Prosze podac pojemnosc plecaka.\n";
+            cin >> chosen;
+            this->generateRandom(v, chosen);
+            break;
+        case 3:
+            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            std::cout << "\n########################################\n" << this->bruteForce();
+            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            cout << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1) << " nanosekund.\n";
+            break;
+        case 4:
+            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            std::cout << "\n########################################\n" << this->greedyAlgorithm();
+            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            cout << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1) << " nanosekund.\n";
+            break;
+        case 5:
+            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            std::cout << "\n########################################\n" << this->dynamicProgramming();
+            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            cout << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1) << " nanosekund.\n";
+            break;
+        case 6:
+            return;
+        default:
+            cout << "Prosze podac poprawna liczbe.\n";
+            cin.clear();
+            cin.sync();
+            break;
+    }
+    this->menu();
 }

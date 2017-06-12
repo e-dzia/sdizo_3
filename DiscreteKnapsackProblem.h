@@ -25,11 +25,16 @@ public:
 
     void loadFromFile(std::string filename) override;
 
-    void generateRandom() override;
+    void generateRandom(int number, int size) override;
 
     bool* dec2bin(int dec);
 
-    long long int power(int n);
+    double testTime(int algorithmType) override;
+
+    void saveToFile(std::string filename) override;
+
+    void menu() override;
+
 };
 
 

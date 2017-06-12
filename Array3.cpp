@@ -180,3 +180,10 @@ void Array3::menu() {
 int Array3::getElement(int position) {
     return array[position];
 }
+
+bool Array3::deleteAll() {
+    for (int i = 0; i < this->getSize(); i++){
+        this->deleteElement(0);
+    }
+    return true;
+}

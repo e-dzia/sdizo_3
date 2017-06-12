@@ -24,7 +24,7 @@ public:
 
     void loadFromFile(std::string filename) override;
 
-    void generateRandom() override;
+    void generateRandom(int number, int size) override;
 
     bool allVisited(bool pBoolean[]);
 
@@ -33,6 +33,12 @@ public:
     void swap(int *pInt, int *pInt1);
 
     std::string countPath(int *permutation, int &min);
+
+    double testTime(int algorithmType) override;
+
+    void saveToFile(std::string filename) override;
+
+    void menu() override;
 };
 
 

@@ -17,7 +17,12 @@ public:
     virtual std::string dynamicProgramming() = 0;
 
     virtual void loadFromFile(std::string filename) = 0;
-    virtual void generateRandom() = 0;
+    virtual void saveToFile(std::string filename) = 0;
+    virtual void generateRandom(int number, int size) = 0;
+
+    virtual double testTime(int algorithmType) = 0;
+
+    virtual void menu() = 0;
 };
 
 
